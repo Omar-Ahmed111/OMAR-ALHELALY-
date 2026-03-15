@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="OMAR ALHELALY" />
+    <title>لوحة التحكم | عمر الهلالي</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet" />
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <!-- Chart.js للإحصائيات -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * { font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background-color: #0f111a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header-bg {
+            background: linear-gradient(to bottom, #e60000, #b30000);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            position: relative;
+        }
+
+        .custom-card {
+            background-color: #1a1d29;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .custom-input {
+            background-color: #0f111a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 15px;
+            color: white;
+            width: 100%;
+            outline: none;
+            transition: border 0.3s;
+        }
+        .custom-input:focus {
+            border-color: #e60000;
+        }
+
+        .btn-primary {
+            background-color: #f39c12;
+            color: #000;
+            font-weight: 900;
+            padding: 12px 25px;
+            border-radius: 12px;
+            width: 100%;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-red {
+            background-color: #e60000;
+            color: white;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .live-badge {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+        }
+
+        .stat-box {
+            background-color: #1a1d29;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border-right: 4px solid #e60000;
+        }
+
+        /* زر العودة المحسن */
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #e60000, #b30000);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 9999;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px #e60000;
+            animation: backButtonPulse 2s ease-in-out infinite;
+            transition: transform 0.3s;
+        }
+        .back-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #e60000;
+        }
+        
+        @keyframes backButtonPulse {
+            0% { box-shadow: 0 0 10px #e60000; }
+            50% { box-shadow: 0 0 30px #e60000, 0 0 40px #e60000; }
+            100% { box-shadow: 0 0 10px #e60000; }
+        }
+
+        /* توقيع عمر */
+        .omar-signature {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #e60000, #b30000);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 0 20px #e60000;
+            animation: signatureGlow 2s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @keyframes signatureGlow {
+            0% { box-shadow: 0 0 10px #e60000; }
+            50% { box-shadow: 0 0 30px #e60000, 0 0 40px #e60000; }
+            100% { box-shadow: 0 0 10px #e60000; }
+        }
+
+        /* Tabs */
+        .admin-tab {
+            background: #1a1d29;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .admin-tab.active {
+            background: #e60000;
+            color: white;
+        }
+
+        /* Table */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .admin-table th {
+            text-align: right;
+            padding: 10px;
+            background: #0f111a;
+            color: #f39c12;
+            font-size: 12px;
+        }
+        .admin-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f111a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e60000; }
+    </style>
+</head>
+<body>
+
+    <!-- توقيع عمر -->
+    <div class="omar-signature">
+        <i class="fas fa-crown text-yellow-300"></i>
+        OMAR ALHELALY ADMIN
+        <i class="fas fa-circle text-green-300 animate-pulse"></i>
+    </div>
+
+    <!-- زر العودة المحسن -->
+    <a href="index.html" class="back-button">
+        <i class="fas fa-arrow-right"></i>
+        العودة للموقع الرئيسي
+        <i class="fas fa-home"></i>
+    </a>
+
+    <!-- Header -->
+    <div class="header-bg">
+        <div class="absolute top-5 right-5">
+            <div class="live-badge">
+                <span class="dot animate-pulse"></span>
+                ADMIN LIVE
+            </div>
+        </div>
+        
+        <div class="absolute top-5 left-5">
+            <button id="themeToggle" class="bg-white/10 p-2 rounded-full hover:bg-white/20 transition">
+                <i class="fas fa-sun text-white" id="themeIcon"></i>
+            </button>
+        </div>
+
+        <h1 class="text-3xl font-black mb-2">لوحة تحكم فودافون</h1>
+        <p class="text-sm opacity-80">تصميم وبرمجة: OMAR ALHELALY</p>
+    </div>
+
+    <div class="container mx-auto px-4 -mt-8 pb-24">
+        
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="stat-box">
+                <p class="text-xs opacity-60 mb-1">إجمالي الكروت</p>
+                <p class="text-2xl font-black text-red-500" id="totalCardsStat">0</p>
+            </div>
+            <div class="stat-box" style="border-color: #f39c12;">
+                <p class="text-xs opacity-60 mb-1">كروت مميزة</p>
+                <p class="text-2xl font-black text-yellow-500" id="adminCardsStat">0</p>
+            </div>
+            <div class="stat-box" style="border-color: #2ecc71;">
+                <p class="text-xs opacity-60 mb-1">التعليقات</p>
+                <p class="text-2xl font-black text-green-500" id="totalCommentsStat">0</p>
+            </div>
+            <div class="stat-box" style="border-color: #3498db;">
+                <p class="text-xs opacity-60 mb-1">المستخدمين</p>
+                <p class="text-2xl font-black text-blue-500" id="totalUsersStat">0</p>
+            </div>
+        </div>
+
+        <!-- Extra Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+            <div class="bg-[#1a1d29] p-3 rounded-xl text-center">
+                <p class="text-xs opacity-60">زوار اليوم</p>
+                <p class="text-lg font-bold" id="todayVisitorsStat">0</p>
+            </div>
+            <div class="bg-[#1a1d29] p-3 rounded-xl text-center">
+                <p class="text-xs opacity-60">إجمالي التفاعلات</p>
+                <p class="text-lg font-bold" id="totalReactionsStat">0</p>
+            </div>
+            <div class="bg-[#1a1d29] p-3 rounded-xl text-center">
+                <p class="text-xs opacity-60">البلاغات</p>
+                <p class="text-lg font-bold" id="reportsStat">0</p>
+            </div>
+            <div class="bg-[#1a1d29] p-3 rounded-xl text-center">
+                <p class="text-xs opacity-60">المحظورين</p>
+                <p class="text-lg font-bold" id="blockedStat">0</p>
+            </div>
+            <div class="bg-[#1a1d29] p-3 rounded-xl text-center">
+                <p class="text-xs opacity-60">النقاط الممنوحة</p>
+                <p class="text-lg font-bold" id="pointsStat">0</p>
+            </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <button onclick="showTab('cards')" class="admin-tab active" id="tabCards">📋 الكروت</button>
+            <button onclick="showTab('add')" class="admin-tab" id="tabAdd">➕ إضافة</button>
+            <button onclick="showTab('announce')" class="admin-tab" id="tabAnnounce">📢 إعلانات</button>
+            <button onclick="showTab('reports')" class="admin-tab" id="tabReports">🚨 بلاغات</button>
+            <button onclick="showTab('users')" class="admin-tab" id="tabUsers">👥 المستخدمين</button>
+            <button onclick="showTab('stats')" class="admin-tab" id="tabStats">📊 إحصائيات</button>
+            <button onclick="showTab('challenges')" class="admin-tab" id="tabChallenges">🏆 تحديات</button>
+        </div>
+
+        <!-- Tab: Cards -->
+        <div id="cardsTab" class="tab-content">
+            <div class="custom-card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-red-500">إدارة الكروت</h3>
+                    <div class="flex gap-2">
+                        <button onclick="loadCards('live_cards')" class="text-xs bg-red-600/20 text-red-500 px-3 py-1 rounded-full hover:bg-red-600 hover:text-white transition">عادية</button>
+                        <button onclick="loadCards('admin_cards')" class="text-xs bg-yellow-600/20 text-yellow-500 px-3 py-1 rounded-full hover:bg-yellow-600 hover:text-white transition">مميزة</button>
+                    </div>
+                </div>
+                
+                <input type="text" id="cardSearch" placeholder="🔍 بحث في الكروت..." class="custom-input mb-4">
+
+                <div id="cardsList" class="space-y-3">
+                    <div class="text-center py-10 opacity-30">جاري تحميل الكروت...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Add Card -->
+        <div id="addTab" class="tab-content hidden">
+            <div class="custom-card">
+                <h3 class="font-bold text-red-500 mb-4">➕ إضافة كارت جديد</h3>
+                
+                <div class="space-y-4">
+                    <input type="text" id="cardCode" placeholder="كود الشحن" class="custom-input">
+                    <input type="number" id="cardUnits" placeholder="عدد الوحدات" class="custom-input">
+                    
+                    <select id="cardType" class="custom-input">
+                        <option value="normal">🔴 كارت عادي</option>
+                        <option value="admin">⭐ كارت مميز</option>
+                    </select>
+
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="startChallenge" class="w-5 h-5">
+                        <label for="startChallenge">بدء تحدي على هذا الكارت (أول 10)</label>
+                    </div>
+
+                    <button onclick="addCard()" class="btn-primary">
+                        <i class="fas fa-save ml-2"></i>
+                        حفظ الكارت
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Announcements -->
+        <div id="announceTab" class="tab-content hidden">
+            <div class="custom-card">
+                <h3 class="font-bold text-yellow-500 mb-4">📢 إعلان عاجل</h3>
+                
+                <textarea id="announcementText" rows="3" class="custom-input mb-4" placeholder="نص الإعلان..."></textarea>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <input type="number" id="announceDuration" placeholder="المدة (دقائق)" class="custom-input" value="5">
+                    <select id="announceTarget" class="custom-input">
+                        <option value="all">كل المستخدمين</option>
+                        <option value="active">النشطين فقط</option>
+                    </select>
+                </div>
+                
+                <button onclick="publishAnnouncement()" class="btn-primary" style="background-color: #e67e22;">
+                    <i class="fas fa-paper-plane ml-2"></i>
+                    نشر الإعلان
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab: Reports -->
+        <div id="reportsTab" class="tab-content hidden">
+            <div class="custom-card">
+                <h3 class="font-bold text-red-500 mb-4">🚨 البلاغات الواردة</h3>
+                
+                <div id="reportsList" class="space-y-3">
+                    <div class="text-center py-10 opacity-30">لا توجد بلاغات</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Users -->
+        <div id="usersTab" class="tab-content hidden">
+            <div class="custom-card">
+                <h3 class="font-bold text-blue-500 mb-4">👥 إدارة المستخدمين</h3>
+                
+                <input type="text" id="userSearch" placeholder="🔍 بحث عن مستخدم..." class="custom-input mb-4">
+                
+                <div id="usersList" class="space-y-3">
+                    <div class="text-center py-10 opacity-30">جاري تحميل المستخدمين...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Statistics -->
+        <div id="statsTab" class="tab-content hidden">
+            <div class="custom-card">
+                <h3 class="font-bold text-green-500 mb-4">📊 إحصائيات متقدمة</h3>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-[#0f111a] p-4 rounded-xl text-center">
+                        <p class="text-3xl font-bold text-red-500" id="totalCardsStats">0</p>
+                        <p class="text-xs opacity-50">إجمالي الكروت</p>
+                    </div>
+                    <div class="bg-[#0f111a] p-4 rounded-xl text-center">
+                        <p class="text-3xl font-bold text-yellow-500" id="totalLikesStats">0</p>
+                        <p class="text-xs opacity-50">إجمالي الإعجابات</p>
+                    </div>
+                    <div class="bg-[#0f111a] p-4 rounded-xl text-center">
+                        <p class="text-3xl font-bold text-green-500" id="totalCommentsStats">0</p>
+                        <p class="text-xs opacity-50">إجمالي التعليقات</p>
+                    </div>
+                    <div class="bg-[#0f111a] p-4 rounded-xl text-center">
+                        <p class="text-3xl font-bold text-blue-500" id="totalViewsStats">0</p>
+                        <p class="text-xs opacity-50">إجمالي المشاهدات</p>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <canvas id="statsChart" class="mt-4"></canvas>
+
+                <!-- Top Cards -->
+                <h4 class="font-bold mt-6 mb-3">🔥 أكثر الكروت تفاعلاً</h4>
+                <div id="topCardsList" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Challenges -->
+        <div id="challengesTab" class="tab-content hidden">
+            <div class="custom-card">
+                <h3 class="font-bold text-yellow-500 mb-4">🏆 التحديات النشطة</h3>
+                
+                <div id="challengesList" class="space-y-3">
+                    <div class="text-center py-10 opacity-30">لا توجد تحديات نشطة</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6uH-AjpX-QEHUMm7u0aTvV28cpdHVxm4",
+            authDomain: "omar-142.firebaseapp.com",
+            databaseURL: "https://omar-142-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "omar-142",
+            storageBucket: "omar-142.firebasestorage.app",
+            messagingSenderId: "5683016756",
+            appId: "1:5683016756:web:a49bae5a9c622ad9f40661"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let currentType = 'live_cards';
+        let currentCards = [];
+        let currentReports = [];
+        let currentUsers = [];
+        let chart = null;
+        let blockedUsers = JSON.parse(localStorage.getItem('blockedUsers_admin')) || [];
+
+        // ========== Tabs System ==========
+        window.showTab = function(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            
+            document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+            document.getElementById(`${tab}Tab`).classList.remove('hidden');
+            
+            if (tab === 'stats') loadStats();
+            if (tab === 'reports') loadReports();
+            if (tab === 'users') loadUsers();
+            if (tab === 'challenges') loadChallenges();
+        };
+
+        // ========== Stats Update ==========
+        function updateStats() {
+            db.ref('live_cards').once('value', snap => {
+                document.getElementById('totalCardsStat').textContent = snap.numChildren();
+            });
+            db.ref('admin_cards').once('value', snap => {
+                document.getElementById('adminCardsStat').textContent = snap.numChildren();
+            });
+            db.ref('comments').once('value', snap => {
+                let total = 0;
+                snap.forEach(child => total += child.numChildren());
+                document.getElementById('totalCommentsStat').textContent = total;
+            });
+            db.ref('reactions').once('value', snap => {
+                let total = 0;
+                snap.forEach(child => {
+                    total += (child.val().like || 0) + (child.val().dislike || 0);
+                });
+                document.getElementById('totalReactionsStat').textContent = total;
+            });
+            
+            // Visitors today
+            const today = new Date().toDateString();
+            db.ref('visitors/' + today).once('value', snap => {
+                document.getElementById('todayVisitorsStat').textContent = snap.val() || 0;
+            });
+            
+            // Reports
+            db.ref('reports').once('value', snap => {
+                document.getElementById('reportsStat').textContent = snap.numChildren();
+            });
+            
+            // Users (unique commenters)
+            db.ref('comments').once('value', snap => {
+                const users = new Set();
+                snap.forEach(card => {
+                    card.forEach(comment => {
+                        if (comment.val().userId) users.add(comment.val().userId);
+                    });
+                });
+                document.getElementById('totalUsersStat').textContent = users.size;
+                document.getElementById('blockedStat').textContent = blockedUsers.length;
+            });
+            
+            // Total points (estimate)
+            db.ref('comments').once('value', snap => {
+                let totalPoints = 0;
+                snap.forEach(card => {
+                    totalPoints += card.numChildren() * 3;
+                });
+                document.getElementById('pointsStat').textContent = totalPoints;
+            });
+        }
+
+        // ========== Real-time listeners ==========
+        db.ref('live_cards').on('value', updateStats);
+        db.ref('admin_cards').on('value', updateStats);
+        db.ref('comments').on('value', updateStats);
+        db.ref('reactions').on('value', updateStats);
+        db.ref('reports').on('value', updateStats);
+        db.ref('visitors').on('value', updateStats);
+
+        // ========== Add Card ==========
+        window.addCard = function() {
+            const code = document.getElementById('cardCode').value;
+            const units = document.getElementById('cardUnits').value;
+            const type = document.getElementById('cardType').value;
+            const startChallenge = document.getElementById('startChallenge').checked;
+
+            if (!code || !units) {
+                alert('❌ يرجى إدخال الكود والوحدات');
+                return;
+            }
+
+            const cardData = {
+                code: code,
+                units: parseInt(units),
+                id: Date.now(),
+                addedBy: 'OMAR ALHELALY'
+            };
+
+            const ref = type === 'admin' ? 'admin_cards' : 'live_cards';
+            
+            db.ref(ref).push(cardData).then((snap) => {
+                alert('✅ تم إضافة الكارت بنجاح');
+                
+                // Start challenge if checked
+                if (startChallenge) {
+                    db.ref('challenges/' + snap.key).set({
+                        startTime: Date.now(),
+                        remaining: 10,
+                        users: []
+                    });
+                }
+                
+                document.getElementById('cardCode').value = '';
+                document.getElementById('cardUnits').value = '';
+                document.getElementById('startChallenge').checked = false;
+                loadCards(ref);
+                
+                // Play sound
+                playAdminSound();
+            });
+        }
+
+        function playAdminSound() {
+            try {
+                const audio = new Audio('data:audio/mp3;base64,SUQzBAAAAA...');
+                audio.play();
+            } catch(e) {}
+        }
+
+        // ========== Publish Announcement ==========
+        window.publishAnnouncement = function() {
+            const text = document.getElementById('announcementText').value;
+            const duration = parseInt(document.getElementById('announceDuration').value) * 60 * 1000;
+            const target = document.getElementById('announceTarget').value;
+
+            if (!text) {
+                alert('❌ يرجى كتابة نص الإعلان');
+                return;
+            }
+
+            db.ref('site_settings/announcement').set({
+                text: text,
+                timestamp: Date.now(),
+                duration: duration,
+                target: target,
+                publishedBy: 'OMAR ALHELALY'
+            }).then(() => {
+                alert('✅ تم نشر الإعلان بنجاح');
+                document.getElementById('announcementText').value = '';
+            });
+        }
+
+        // ========== Load Cards ==========
+        window.loadCards = function(type) {
+            currentType = type;
+            db.ref(type).once('value', snap => {
+                const cards = [];
+                snap.forEach(child => cards.push({ key: child.key, ...child.val() }));
+                currentCards = cards.sort((a,b) => b.id - a.id);
+                displayCards(currentCards);
+            });
+        }
+
+        function displayCards(cards) {
+            const searchTerm = document.getElementById('cardSearch')?.value.toLowerCase() || '';
+            
+            const filtered = cards.filter(c => 
+                c.code.toLowerCase().includes(searchTerm) ||
+                c.units.toString().includes(searchTerm)
+            );
+            
+            const list = document.getElementById('cardsList');
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="text-center py-10 opacity-30">لا توجد كروت</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map((card) => `
+                <div class="bg-[#0f111a] p-4 rounded-xl flex justify-between items-center border border-white/5 hover:border-red-500/30 transition">
+                    <div>
+                        <p class="font-mono font-bold text-red-500 text-lg tracking-wider">${card.code}</p>
+                        <div class="flex items-center gap-3 mt-1">
+                            <span class="text-xs opacity-60"><i class="fas fa-bolt text-yellow-500 ml-1"></i>${card.units} وحدة</span>
+                            <span class="text-[10px] opacity-30">${new Date(card.id).toLocaleDateString('ar-EG')}</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="deleteCard('${currentType}', '${card.key}')" 
+                                class="w-10 h-10 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== Delete Card ==========
+        window.deleteCard = function(type, key) {
+            if (confirm('⚠️ هل أنت متأكد من حذف هذا الكارت؟')) {
+                db.ref(`${type}/${key}`).remove().then(() => {
+                    loadCards(type);
+                });
+            }
+        }
+
+        // ========== Load Reports ==========
+        function loadReports() {
+            db.ref('reports').once('value', snap => {
+                const reports = [];
+                snap.forEach(child => {
+                    reports.push({ key: child.key, ...child.val() });
+                });
+                currentReports = reports.sort((a,b) => b.timestamp - a.timestamp);
+                displayReports();
+            });
+        }
+
+        function displayReports() {
+            const list = document.getElementById('reportsList');
+            if (currentReports.length === 0) {
+                list.innerHTML = '<div class="text-center py-10 opacity-30">لا توجد بلاغات</div>';
+                return;
+            }
+
+            list.innerHTML = currentReports.map(report => `
+                <div class="bg-[#0f111a] p-4 rounded-xl border border-red-500/30">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs opacity-50">كارت: ${report.cardId}</p>
+                            <p class="mt-2">${report.reason}</p>
+                            <p class="text-[10px] opacity-30 mt-1">${new Date(report.timestamp).toLocaleString('ar-EG')}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="deleteReport('${report.key}')" class="text-red-500 hover:text-red-400">حذف</button>
+                            <button onclick="blockUser('${report.userId}')" class="text-yellow-500 hover:text-yellow-400">حظر</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.deleteReport = function(key) {
+            db.ref('reports/' + key).remove().then(() => loadReports());
+        }
+
+        // ========== User Management ==========
+        function loadUsers() {
+            db.ref('comments').once('value', snap => {
+                const users = new Map();
+                snap.forEach(card => {
+                    card.forEach(comment => {
+                        const data = comment.val();
+                        if (data.userId) {
+                            if (!users.has(data.userId)) {
+                                users.set(data.userId, {
+                                    userId: data.userId,
+                                    userName: data.userName || 'زائر',
+                                    lastSeen: data.timestamp,
+                                    comments: 0,
+                                    blocked: blockedUsers.includes(data.userId)
+                                });
+                            }
+                            const user = users.get(data.userId);
+                            user.comments++;
+                            if (data.timestamp > user.lastSeen) user.lastSeen = data.timestamp;
+                        }
+                    });
+                });
+                currentUsers = Array.from(users.values());
+                displayUsers();
+            });
+        }
+
+        function displayUsers() {
+            const searchTerm = document.getElementById('userSearch')?.value.toLowerCase() || '';
+            
+            const filtered = currentUsers.filter(u => 
+                u.userName.toLowerCase().includes(searchTerm) ||
+                u.userId.includes(searchTerm)
+            );
+            
+            const list = document.getElementById('usersList');
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="text-center py-10 opacity-30">لا يوجد مستخدمين</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(user => `
+                <div class="bg-[#0f111a] p-4 rounded-xl border ${user.blocked ? 'border-red-500' : 'border-white/5'}">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">${user.userName}</p>
+                            <p class="text-[10px] opacity-30">${user.userId.substring(0, 8)}...</p>
+                            <p class="text-xs mt-1">تعليقات: ${user.comments}</p>
+                            <p class="text-[10px] opacity-30">آخر ظهور: ${new Date(user.lastSeen).toLocaleString('ar-EG')}</p>
+                        </div>
+                        ${user.blocked ? 
+                            `<button onclick="unblockUser('${user.userId}')" class="bg-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition">رفع الحظر</button>` :
+                            `<button onclick="blockUser('${user.userId}')" class="bg-red-600 px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition">حظر</button>`
+                        }
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.blockUser = function(userId) {
+            if (!blockedUsers.includes(userId)) {
+                blockedUsers.push(userId);
+                localStorage.setItem('blockedUsers_admin', JSON.stringify(blockedUsers));
+                loadUsers();
+                alert('✅ تم حظر المستخدم');
+            }
+        };
+
+        window.unblockUser = function(userId) {
+            blockedUsers = blockedUsers.filter(id => id !== userId);
+            localStorage.setItem('blockedUsers_admin', JSON.stringify(blockedUsers));
+            loadUsers();
+            alert('✅ تم فك الحظر');
+        };
+
+        // ========== Load Challenges ==========
+        function loadChallenges() {
+            db.ref('challenges').once('value', snap => {
+                const challenges = [];
+                snap.forEach(child => {
+                    challenges.push({ key: child.key, ...child.val() });
+                });
+                displayChallenges(challenges);
+            });
+        }
+
+        function displayChallenges(challenges) {
+            const list = document.getElementById('challengesList');
+            if (challenges.length === 0) {
+                list.innerHTML = '<div class="text-center py-10 opacity-30">لا توجد تحديات نشطة</div>';
+                return;
+            }
+
+            list.innerHTML = challenges.map(challenge => `
+                <div class="bg-[#0f111a] p-4 rounded-xl border border-yellow-500/30">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">كارت: ${challenge.key}</p>
+                            <p class="text-sm mt-1">المتبقي: ${challenge.remaining} من 10</p>
+                            <p class="text-[10px] opacity-30">المستخدمين: ${challenge.users?.length || 0}</p>
+                        </div>
+                        <button onclick="endChallenge('${challenge.key}')" class="bg-red-600 px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition">إنهاء</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.endChallenge = function(key) {
+            if (confirm('إنهاء التحدي؟')) {
+                db.ref('challenges/' + key).remove().then(() => loadChallenges());
+            }
+        };
+
+        // ========== Load Statistics ==========
+        function loadStats() {
+            db.ref().once('value', snap => {
+                const data = snap.val() || {};
+                
+                // Total counts
+                const liveCards = Object.keys(data.live_cards || {}).length;
+                const adminCards = Object.keys(data.admin_cards || {}).length;
+                document.getElementById('totalCardsStats').textContent = liveCards + adminCards;
+                
+                // Likes
+                let totalLikes = 0;
+                Object.values(data.reactions || {}).forEach(r => totalLikes += r.like || 0);
+                document.getElementById('totalLikesStats').textContent = totalLikes;
+                
+                // Comments
+                let totalComments = 0;
+                Object.values(data.comments || {}).forEach(c => totalComments += Object.keys(c).length);
+                document.getElementById('totalCommentsStats').textContent = totalComments;
+                
+                // Views
+                let totalViews = 0;
+                Object.values(data.card_views || {}).forEach(v => totalViews += v);
+                document.getElementById('totalViewsStats').textContent = totalViews;
+                
+                // Top cards
+                const cards = [];
+                Object.entries(data.live_cards || {}).forEach(([key, val]) => {
+                    cards.push({ id: key, ...val, isAdmin: false });
+                });
+                Object.entries(data.admin_cards || {}).forEach(([key, val]) => {
+                    cards.push({ id: key, ...val, isAdmin: true });
+                });
+                
+                const topCards = cards.map(card => {
+                    const likes = data.reactions?.[card.id]?.like || 0;
+                    const comments = Object.keys(data.comments?.[card.id] || {}).length;
+                    const views = data.card_views?.[card.id] || 0;
+                    return {
+                        code: card.code,
+                        units: card.units,
+                        interactions: likes + comments + views
+                    };
+                }).sort((a,b) => b.interactions - a.interactions).slice(0, 5);
+                
+                document.getElementById('topCardsList').innerHTML = topCards.map(t => `
+                    <div class="bg-[#0f111a] p-3 rounded-xl flex justify-between">
+                        <span class="font-mono text-red-500">${t.code}</span>
+                        <span class="opacity-50">${t.interactions} تفاعل</span>
+                    </div>
+                `).join('');
+                
+                // Create chart
+                createChart(data);
+            });
+        }
+
+        function createChart(data) {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            
+            // Last 7 days
+            const days = [];
+            const cardCounts = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dayStr = date.toLocaleDateString('ar-EG', { weekday: 'short' });
+                days.push(dayStr);
+                
+                // Count cards added that day
+                let cardsAdded = 0;
+                const dayStart = date.setHours(0,0,0,0);
+                const dayEnd = date.setHours(23,59,59,999);
+                
+                Object.values(data.live_cards || {}).forEach(c => {
+                    if (c.id >= dayStart && c.id <= dayEnd) cardsAdded++;
+                });
+                Object.values(data.admin_cards || {}).forEach(c => {
+                    if (c.id >= dayStart && c.id <= dayEnd) cardsAdded++;
+                });
+                cardCounts.push(cardsAdded);
+            }
+            
+            if (chart) chart.destroy();
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'كروت جديدة',
+                        data: cardCounts,
+                        borderColor: '#e60000',
+                        backgroundColor: 'rgba(230,0,0,0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#fff' }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#fff' }
+                        },
+                        x: { 
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#fff' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ========== Search Listeners ==========
+        document.getElementById('cardSearch')?.addEventListener('input', () => displayCards(currentCards));
+        document.getElementById('userSearch')?.addEventListener('input', displayUsers);
+
+        // ========== Theme System ==========
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.style.backgroundColor = '#f5f5f5';
+            body.style.color = '#000';
+            themeIcon.className = 'fas fa-moon';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (body.style.backgroundColor === 'rgb(15, 17, 26)') {
+                body.style.backgroundColor = '#f5f5f5';
+                body.style.color = '#000';
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.style.backgroundColor = '#0f111a';
+                body.style.color = '#fff';
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // ========== Initial Load ==========
+        updateStats();
+        loadCards('live_cards');
+    </script>
+</body>
+</html>
